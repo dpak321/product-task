@@ -1,0 +1,173 @@
+
+<html>
+<head>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+<h2>Task</h2>
+
+<!-- <input type="button" id="adddata" onclick="LoadData();" /> -->
+<table id="prodtable">
+    <tr>
+        <td>Product</td>
+        <td><select id="product" onchange="OnProductSelect()">
+        <option value="0" name="qnt_1" type="text" id="qnt_1" size="3" data-price="0">Select Product </option>
+        <option value="1" name="qnt_1" type="text" id="qnt_1"  size="3" data-price="60">Burger</option>
+        <option value="2"  name="qnt_1" type="text" id="qnt_1" size="3" data-price="40">Fries</option>
+        <option value="3" name="qnt_1" type="text" id="qnt_1"  size="3" data-price="80">Pizza</option>
+        <option value="4" name="qnt_1" type="text" id="qnt_1"  size="3" data-price="100" >Thali</option>
+        </select></td>
+        <td>Price</td>
+        <td><select id="price">
+            <option value="">-- select one -- </option>
+        </select> </td>
+        <td>Qty</td>
+        <td><input type="text" id="qty" onkeyup="CalculateTotal()" /></td>
+        <td>Total Amount</td>
+        <td><input type="text" id="total" /></td>
+        <td><input type="button" id="Add" onclick="AddToGrid()" value="Add" /></td>
+    </tr>
+
+</table>
+
+<table id="ProductList">
+    <tr class="header">
+        <td>Product</td>
+        <td>Price</td>
+        <td>Qty</td>
+        <td>Total Amount</td>
+    </tr>
+</table>
+<br>
+<input type="button" onclick="SubmitData()" value="submit" />
+</body>
+<script>
+  var productls;
+  function OnProductSelect() {
+        var valueselected;
+        $("select option:selected").each(function () {
+            valueselected = $(this).val();
+            $.each(productls, function (i) {
+                if (productls[i].Product_Id == valueselected) {
+                    $("#price").val(productls[i].Price);
+                }
+            });
+        });
+
+    }
+//NEW CODE
+$(document).ready(function() {
+
+$("#product").change(function() {
+    var val = $(this).val();
+    if (val == "1") {
+        $("#price").html("<option value='60'>60</option><option value='test2'>60</option>");
+    } else if (val == "2") {
+        $("#price").html("<option value='40'>40</option><option value='test2'>40</option>");
+
+    } else if (val == "3") {
+        $("#price").html("<option value='80'>80</option><option value='test2'>80</option>");
+
+    }
+    else if (val == "4") {
+        $("#price").html("<option value='100'>100</option><option value='test2'>100</option>");
+
+    }
+});
+// NEW CODE ENDS HERE
+
+});
+function CalculateTotal() {
+    var qtyentered = parseInt($("#qty").val());
+    var selectedProdPrice = $("#product").getAttribute("data-price");
+       $("#total").val(qtyentered * selectedProdPrice);
+
+    }
+// var total_items = 4;
+        
+//         function CalculateItemsValue() {
+//             var total = 0;
+//             for (i=1; i<=total_items; i++) {
+                
+//                 itemID = document.getElementById("qnt_"+i);
+//                 if (typeof itemID === 'undefined' || itemID === null) {
+//                     alert("No such item - " + "qnt_"+i);
+//                 } else {
+//                     total = total + pa$Int(itemID.value) * pa$Int(itemID.getAttribute("data-price"));
+//                 }
+                
+//             }
+//             document.getElementById("total").innerHTML = "$" + total;
+            
+//         };
+
+
+
+
+    // function CalculateTotal() {
+    //     // debugger;
+        
+    //     // itemID = document.getElementById("qnt_"+i);
+    //     var qtyentered = pa$Int($("#qty").val());
+    //     var selectedProdPrice = pa$Int($("#price").getAttribute("data-price"));
+        
+    //     // total = total + pa$Int(itemID.value) * pa$Int(itemID.getAttribute("data-price"));
+    //     $("#total").val(qtyentered * selectedProdPrice);
+
+    // }
+    var selectedprodlist = new Array();;
+    function AddToGrid() {
+        var selectedprod = new Object();
+        selectedprod.product_Id = $("#product").val();
+        selectedprod.productName = $("#product").text();
+        selectedprod.price = $("#price").val();
+        selectedprod.qty = $("#qty").val();
+        selectedprod.totalAmount = $("#total").val();
+        selectedprodlist.push(selectedprod);
+        LoadTable();
+    }
+    function LoadTable() {
+        $.each(selectedprodlist, function (i) {
+            $("#ProductList").append(
+                '<tr id=' + selectedprodlist[i].product_Id + ' class=\'data\'><td>' + selectedprodlist[i].productName +
+                '</td><td>' + selectedprodlist[i].price +
+                '</td><td>' + selectedprodlist[i].qty +
+                '</td><td>' + selectedprodlist[i].totalAmount +
+                '</td><td><input type=\'button\' value=\'delete\' onclick=\'deletedata(' + selectedprodlist[i].product_Id + ')\'/>' +
+                '</td></tr>'
+            );
+        });
+    }
+    function deletedata(productid) {
+        debugger;
+        $.each(selectedprodlist, function (i) {
+            if (selectedprodlist[i].product_Id == productid) {
+                //alert(productid);
+                selectedprodlist.splice(i, 1);
+                $("tr[class=data]").remove();
+
+
+            }
+        });
+        LoadTable();
+    } 
+ 
+
+    // function SubmitData() {
+    //     debugger;
+    //     var data = { data: selectedprodlist };
+    //     $.ajax({
+    //         type: "POST",
+    //         url: "/Product/SubmitData",
+    //         data: JSON.stringify(data),
+    //         contentType: "application/json",
+    //         dataType: "json",
+    //         success: function (msg) {
+    //             alert(msg);
+    //         }
+    //     });
+    // }
+</script>
+</html>

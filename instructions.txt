@@ -1,0 +1,3 @@
+the task.html file is the one with manual user defined price in which we get the total but have an error in add and delete.
+
+test.html file is the one in which it takes input from select statement but unable to get a total and same errors of add and delete.

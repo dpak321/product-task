@@ -1,0 +1,138 @@
+<html>
+<head>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+<h2>Index</h2>
+
+<!-- <input type="button" id="adddata" onclick="LoadData();" /> -->
+<table id="prodtable">
+    <tr>
+        <td>Product</td>
+        <td><select id="product" onchange="OnProductSelect()"><option>Rice</option>
+            
+        
+        </select></td>
+        <td>Price</td>
+        <td><input type="text" id="price" /></td>
+        <td>Qty</td>
+        <td><input type="text" id="qty" onkeyup="CalculateTotal()" /></td>
+        <td>Total Amount</td>
+        <td><input type="text" id="total" /></td>
+        <td><input type="button" id="Add" onclick="AddToGrid()" value="Add" /></td>
+    </tr>
+
+</table>
+
+<table id="ProductList">
+    <tr class="header">
+        <td>Product</td>
+        <td>Price</td>
+        <td>Qty</td>
+        <td>Total Amount</td>
+    </tr>
+</table>
+
+<input type="button" onclick="SubmitData()" value="submit" />
+
+
+<script type="text/javascript">
+    var productls;
+
+
+    function LoadData() {
+        //alert('hi');
+        $.ajax('/Product/productList').then(function (data) {
+            //alert('succes');
+            productls = data;
+            debugger;
+
+            $.each(productls, function (i) {
+                //alert(data[i].ProductName);
+                $("#product").append('<option value=' + data[i].Product_Id + '>' + data[i].ProductName + '</option>');
+            });
+            OnProductSelect();
+
+        });
+
+    }
+    function OnProductSelect() {
+        var valueselected;
+        $("select option:selected").each(function () {
+            valueselected = $(this).val();
+            $.each(productls, function (i) {
+                if (productls[i].Product_Id == valueselected) {
+                    $("#price").val(productls[i].Price);
+                }
+            });
+        });
+
+    }
+
+    function CalculateTotal() {
+        debugger;
+        var qtyentered = parseInt($("#qty").val());
+        var selectedProdPrice = parseInt($("#price").val());
+        $("#total").val(qtyentered * selectedProdPrice);
+
+    }
+    var selectedprodlist = new Array();;
+    function AddToGrid() {
+        var selectedprod = new Object();
+        selectedprod.product_Id = $("#product").val();
+        selectedprod.productName = $("#product").text();
+        selectedprod.price = $("#price").val();
+        selectedprod.qty = $("#qty").val();
+        selectedprod.totalAmount = $("#total").val();
+        selectedprodlist.push(selectedprod);
+        LoadTable();
+    }
+    function LoadTable() {
+        $.each(selectedprodlist, function (i) {
+            $("#ProductList").append(
+                '<tr id=' + selectedprodlist[i].product_Id + ' class=\'data\'><td>' + selectedprodlist[i].productName +
+                '</td><td>' + selectedprodlist[i].price +
+                '</td><td>' + selectedprodlist[i].qty +
+                '</td><td>' + selectedprodlist[i].totalAmount +
+                '</td><td><input type=\'button\' value=\'delete\' onclick=\'deletedata(' + selectedprodlist[i].product_Id + ')\'/>' +
+                '</td></tr>'
+            );
+        });
+    }
+
+
+    function deletedata(productid) {
+        debugger;
+        $.each(selectedprodlist, function (i) {
+            if (selectedprodlist[i].product_Id == productid) {
+                //alert(productid);
+                selectedprodlist.splice(i, 1);
+                $("tr[class=data]").remove();
+
+
+            }
+        });
+        LoadTable();
+    }
+
+    
+    function SubmitData() {
+        debugger;
+        var data = { data: selectedprodlist };
+        $.ajax({
+            type: "POST",
+            url: "/Product/SubmitData",
+            data: JSON.stringify(data),
+            contentType: "application/json",
+            dataType: "json",
+            success: function (msg) {
+                alert(msg);
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
